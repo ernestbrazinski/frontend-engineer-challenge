@@ -1,47 +1,140 @@
-# Svelte + TS + Vite
+# Advanced Frontend Engineer Challenge
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+Искренне благодарим вас за время и внимание к этому челленджу и надеемся на долгосрочную совместную командную работу
 
-## Recommended IDE Setup
+Подписывайтесь на канал с новыми челленджами: [@atls_challenges](https://t.me/atls_challenges)
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+Не забудьте сперва поставить Star. Спасибо!
 
-## Need an official Svelte framework?
+Этот репозиторий — инженерный челлендж для кандидатов на frontend позиции
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+Задача узкая по продукту и широкая по инженерным решениям: нам важно увидеть не только верстку, а умение проектировать клиентскую часть под реальный backend
 
-## Technical considerations
+## Запуск проекта (Orbitto)
 
-**Why use this over SvelteKit?**
+- Требуется **Node.js** (LTS).
+- `npm install`
+- `npm run dev` — локальная разработка (SvelteKit)
+- `npm run build` и `npm run preview` — проверка production-сборки
+- `npm run check` — `svelte-check` и TypeScript
+- `npm run format` — Prettier
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+**Стек:** SvelteKit 2, Svelte 5, TypeScript, SCSS, Prettier.
 
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+## Контекст
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+Вам нужно взять любой понравившийся fork [backend/fullstack-челленджа](https://github.com/atls-academy/engineer-challenge) и реализовать под него frontend для 3 сценариев:
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
+1. Регистрация
+2. Авторизация
+3. Восстановление пароля
 
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
+Дизайн остается тем же: [Figma-файл Orbitto Service](https://www.figma.com/design/31KetUbya482vMSGgyiNIf/Orbitto-%7C-Service--Copy-?node-id=102-12806&t=TMlkJ3c3j3vJF5fb-4)
 
-**Why include `.vscode/extensions.json`?**
+Файл доступен для создания копии в ваш workspace, но права на редактирование исходного файла не выдаются
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+Запросы на доступ к редактированию исходного файла не рассматриваются
 
-**Why enable `allowJs` in the TS template?**
+## Что важно
 
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
+Решение должно демонстрировать инженерную зрелость:
 
-**Why is HMR not preserving my local component state?**
+- Декомпозиция интерфейса и переиспользуемость компонентов
+- Управление состоянием и асинхронными сценариями
+- Работа с контрактами backend (ошибки, edge-cases, нестабильные ответы)
+- Доступность (a11y), UX-состояния и производительность
+- Осознанная аргументация trade-offs
 
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
+`Просто сверстать макет` не считается целевым уровнем решения для этого челленджа
 
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
+## Обязательные требования
 
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from "svelte/store";
-export default writable(0);
-```
+1. UI и UX
+
+- Реализуйте все экраны и состояния auth-флоу по дизайну
+- Обработайте loading/error/empty/success-состояния
+- Обеспечьте адаптивность минимум для desktop и mobile
+
+2. Интеграция с backend
+
+- Подключитесь к выбранному fork и его контрактам
+- Обработайте реальные ответы сервиса, включая неуспешные сценарии
+- Зафиксируйте в README предположения по контрактам
+
+3. Архитектура frontend
+
+- Покажите структуру слоев/модулей и границы ответственности
+- Избегайте проекта в формате `все в одном components/ и services/`
+- Опишите ключевые инженерные решения в README
+
+4. Качество и надежность
+
+- Добавьте тесты критичных пользовательских сценариев (unit/integration/e2e — на ваш выбор)
+- Добавьте базовую защиту от типичных UX-проблем (повторные отправки, race conditions, устаревшие запросы)
+
+5. Технологические решения
+
+- Фреймворк и стек выбираете самостоятельно
+- Ограничений по стеку нет: React, Vue, Angular, Svelte, WASM и любые другие варианты
+- В README обязательно объясните выбор и альтернативы, которые рассматривали
+
+## Ограничения и анти-паттерны
+
+Следующие подходы считаются слабым решением:
+
+- Визуальный клон без инженерной структуры
+- Игнорирование неуспешных ответов и ошибок backend
+- Локальные хаки без объяснения trade-offs и последствий
+- Полная завязка на конкретный фреймворк без аргументации
+
+## Что нужно сдать
+
+1. Исходный код frontend в вашем fork
+2. Обновленный README в вашем fork с:
+
+- как запустить проект
+- явной ссылкой на выбранный backend fork
+- как устроена архитектура frontend
+- какие trade-offs были приняты
+- что бы вы сделали следующим шагом в production-версии
+- ссылкой на демо или скринкаст основных сценариев (если есть)
+
+3. Набор тестов и инструкции по запуску
+
+## Формат выполнения
+
+1. Выберите backend fork, с которым хотите работать
+2. Сделайте fork этого репозитория
+3. Реализуйте frontend-решение под выбранный backend
+4. Оформите результат в README
+5. Отправьте в отклике:
+
+- ссылку на ваш frontend fork
+- ссылку на `moodboard`
+- ссылку на `anti-moodboard`
+
+## Использование ИИ
+
+- Использование ИИ-инструментов в рамках челленджа разрешено
+- Если используете ИИ, добавьте в ваш fork папку `.agents`, чтобы было видно, как вы строили процесс решения
+
+## Критерии оценки
+
+1. Качество архитектуры frontend и управляемость кода
+2. Корректность auth-флоу и интеграции с backend
+3. Качество UX-состояний, обработки ошибок и адаптивности
+4. Тестируемость и надежность ключевых сценариев
+5. Ясность инженерной аргументации в README
+
+## Бонусные сигналы
+
+- Продуманная мини-дизайн-система или слой UI-kit внутри решения
+- Стратегия типизации контрактов (например, codegen/typed clients)
+- Базовая наблюдаемость фронта (telemetry/error tracking) с аргументацией, где это уместно
+- Использование микрофронтов, если это уместно и инженерно оправдано
+- Использование FSD с аргументацией границ и композиции слоев
+- Следование SOLID в архитектуре клиентской части
+
+## Важно
+
+Нас интересует не идеальный пиксель-перфект любой ценой, а качество инженерного мышления и способность строить устойчивый frontend под реальный backend
