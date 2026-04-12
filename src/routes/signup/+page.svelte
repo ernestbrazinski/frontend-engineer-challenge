@@ -25,9 +25,9 @@
   };
 
   let signUpForm = $state<SignUpFormState>({
-    email: "test@test.test",
-    password: "Test!123",
-    passwordConfirm: "Test!123",
+    email: "",
+    password: "",
+    passwordConfirm: "",
   });
 
   let signUpFormErrors = $state<SignUpFormErrors>({});

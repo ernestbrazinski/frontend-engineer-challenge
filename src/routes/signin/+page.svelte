@@ -33,8 +33,8 @@
   };
 
   let signInForm = $state<SignInFormState>({
-    email: "test4@test.test",
-    password: "Test!123",
+    email: "",
+    password: "",
   });
 
   let signInFormErrors = $state<SignInFormErrors>({});
