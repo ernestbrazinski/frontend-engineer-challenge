@@ -1,0 +1,10 @@
+@use "../../vars.scss" as vars;
+
+.signin__terms-text,
+.signin__terms-text a {
+  color: var(--color-tertiary);
+}
+
+.signin__terms-text a {
+  text-decoration: underline;
+}

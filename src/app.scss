@@ -1,0 +1,170 @@
+@use "vars.scss" as vars;
+@use "routes/signup/signup.scss";
+@use "routes/signin/signin.scss";
+@use "routes/password-recovery/password-recovery.scss";
+
+:root {
+  --base-size: 10px;
+
+  --color-primary: #31a0f0;
+  --color-primary-opacity-10: #31a0f01a;
+  --color-primary-opacity-15: #31a0f026;
+  --color-primary-opacity-20: #31a0f033;
+  --color-primary-hover: #1990e5;
+  --color-primary-active: #0f83d1;
+  --color-primary-disabled: #c0c2cb;
+
+  --color-button-secondary-disabled: #c0c2cb26;
+
+  --color-secondary: #81869a;
+  --color-tertiary: #c0c2cb;
+
+  --color-text-primary: #1f1f27;
+  --color-text-primary-opacity-08: #1f1f2714;
+  --color-text-primary-opacity-30: #1f1f274d;
+
+  --color-invalid: #d23939;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  isolation: isolate;
+  font-family: "Inter", sans-serif;
+  font-size: calc(var(--base-size) * 1.4);
+  color: var(--color-text-primary);
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure,
+blockquote {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  text-decoration-skip-ink: auto;
+
+  &:hover {
+    color: var(--color-primary-hover);
+  }
+
+  &:active {
+    color: var(--color-primary-active);
+  }
+
+  &:disabled {
+    color: var(--color-primary-disabled);
+  }
+}
+
+.d-flex {
+  display: flex;
+}
+
+.aic {
+  align-items: center;
+}
+
+.gap-08 {
+  gap: calc(var(--base-size) * 0.8);
+}
+
+.tc {
+  text-align: center;
+}
+
+.h1 {
+  font-size: calc(var(--base-size) * 3.2);
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.fz-12 {
+  font-size: calc(var(--base-size) * 1.2);
+}
+.fz-14 {
+  font-size: calc(var(--base-size) * 1.4);
+  line-height: 1;
+}
+
+.lh-14 {
+  line-height: 1.4;
+}
+.lh-16 {
+  line-height: 1.6;
+}
+
+.fw-500 {
+  font-weight: 500;
+}
+
+.text-color-secondary {
+  color: var(--color-secondary);
+}
+
+.mt-32 {
+  margin-top: calc(var(--base-size) * 3.2);
+}
+
+.mb-24 {
+  margin-bottom: calc(var(--base-size) * 2.4);
+}
+
+.mb-32 {
+  margin-bottom: calc(var(--base-size) * 3.2);
+}
+
+@media only screen and (max-width: vars.$breakpoint-xl) {
+  :root {
+    --base-size: 0.694vw;
+  }
+}
