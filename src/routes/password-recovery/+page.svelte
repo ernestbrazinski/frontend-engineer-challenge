@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+  import { beforeNavigate } from "$app/navigation";
+
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
   import { ROUTES } from "$lib/constants";
@@ -22,15 +25,20 @@
     startAuthOperation,
   } from "$lib/stores/auth";
 
-  type EmailStep = "form" | "sent";
+  type ViewState =
+    | { type: "request" }
+    | { type: "sent" }
+    | { type: "reset"; token: string }
+    | { type: "success" }
+    | { type: "error" };
 
-  const resetToken = $derived(
-    (page.url.searchParams.get("token") ?? "").trim(),
-  );
+  function viewFromUrl(): ViewState {
+    const token = (page.url.searchParams.get("token") ?? "").trim();
+    if (token) return { type: "reset", token };
+    return { type: "request" };
+  }
 
-  let emailStep = $state<EmailStep>("form");
-  let showCompleteSuccess = $state(false);
-  let showCompleteFailure = $state(false);
+  let view = $state<ViewState>(viewFromUrl());
 
   let email = $state("");
   let formErrors = $state<PasswordRecoveryFormErrors>({});
@@ -38,6 +46,18 @@
   let newPassword = $state("");
   let passwordConfirm = $state("");
   let completeFormErrors = $state<PasswordResetCompleteFormErrors>({});
+
+  function syncViewWithUrl() {
+    const urlToken = (page.url.searchParams.get("token") ?? "").trim();
+
+    if (urlToken) {
+      view = { type: "reset", token: urlToken };
+    } else if (view.type === "reset") {
+      view = { type: "request" };
+    }
+
+    completeFormErrors = {};
+  }
 
   async function onRequestSubmit(e: SubmitEvent) {
     e.preventDefault();
@@ -66,7 +86,7 @@
         return;
       }
       // For a syntactically valid email the API always returns true (no user enumeration).
-      emailStep = "sent";
+      view = { type: "sent" };
     } catch (err) {
       formErrors = mapPasswordRecoveryServerError(err);
     } finally {
@@ -76,8 +96,8 @@
 
   async function onCompleteSubmit(e: SubmitEvent) {
     e.preventDefault();
-    const token = resetToken;
-    if (!token) return;
+    if (view.type !== "reset") return;
+    const token = view.token;
 
     const errors: PasswordResetCompleteFormErrors = {};
     const pwdToSend = newPassword.trim();
@@ -102,22 +122,33 @@
         return;
       }
       if (!data.completePasswordReset) {
-        showCompleteFailure = true;
-        await goto(ROUTES.passwordRecovery, { replaceState: true });
+        view = { type: "error" };
         return;
       }
       clearSession();
-      showCompleteSuccess = true;
       newPassword = "";
       passwordConfirm = "";
       completeFormErrors = {};
-      await goto(ROUTES.passwordRecovery, { replaceState: true });
+      view = { type: "success" };
     } catch (err) {
       completeFormErrors = mapPasswordResetCompleteServerError(err);
     } finally {
       finishAuthOperation();
     }
   }
+
+  function tryPasswordRecoveryAgain() {
+    view = { type: "request" };
+    void goto(ROUTES.passwordRecovery, { replaceState: true });
+  }
+
+  beforeNavigate(() => {
+    view = { type: "request" };
+  });
+
+  onMount(() => {
+    syncViewWithUrl();
+  });
 </script>
 
 <svelte:head>
@@ -129,7 +160,7 @@
     <img src="icons/logo.svg" alt="orbitto" />
   </a>
 
-  {#if showCompleteSuccess}
+  {#if view.type === "success"}
     <div class="password-recovery__container">
       <h1 class="h1 mb-24">Пароль был восстановлен</h1>
       <span class="fz-14 lh-16 text-color-secondary mb-32"
@@ -145,7 +176,7 @@
         Назад в авторизацию
       </Button>
     </div>
-  {:else if showCompleteFailure}
+  {:else if view.type === "error"}
     <div class="password-recovery__container">
       <h1 class="h1 mb-24">Пароль не был восстановлен</h1>
       <span class="fz-14 lh-16 text-color-secondary mb-32"
@@ -165,13 +196,12 @@
           href={ROUTES.passwordRecovery}
           onclick={(e) => {
             e.preventDefault();
-            showCompleteFailure = false;
-            void goto(ROUTES.passwordRecovery, { replaceState: true });
+            tryPasswordRecoveryAgain();
           }}>Попробовать заново</a
         >
       </div>
     </div>
-  {:else if resetToken}
+  {:else if view.type === "reset"}
     <div class="password-recovery__container">
       <form
         class="password-recovery__form"
@@ -183,8 +213,7 @@
           <h1 class="h1">Задайте пароль</h1>
         </div>
         <span class="fz-14 lh-16 text-color-secondary mb-24"
-          >Напишите новый пароль, который будете использовать для входа (не
-          менее 8 символов, буква и цифра)</span
+          >Напишите новый пароль, который будете использовать для входа</span
         >
         <Input
           label="Введите пароль"
@@ -213,7 +242,7 @@
         </Button>
       </form>
     </div>
-  {:else if emailStep === "sent"}
+  {:else if view.type === "sent"}
     <div class="password-recovery__container">
       <h1 class="h1 mb-24">Проверьте свою почту</h1>
       <span class="fz-14 lh-16 text-color-secondary mb-32"

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
+  import { afterNavigate, goto } from "$app/navigation";
   import { ROUTES } from "$lib/constants";
   import { Input, Button } from "$lib/components";
   import { isValidEmailFormat, minLengthError } from "$helpers";
@@ -11,12 +11,21 @@
   import { LOGIN_MUTATION } from "$lib/graphql/operations/auth";
   import type { AuthPayloadGql } from "$lib/graphql/types";
   import {
+    abortHydrateAuth,
     auth,
     clearSessionError,
     commitAuthPayload,
     finishAuthOperation,
+    logout,
     startAuthOperation,
   } from "$lib/stores/auth";
+
+  afterNavigate(({ to }) => {
+    if (to?.url.pathname !== ROUTES.signin) return;
+    abortHydrateAuth();
+    clearSessionError();
+    void logout();
+  });
 
   type SignInFormState = {
     email: string;

@@ -41,6 +41,12 @@ export const isAuthenticated = derived(auth, ($a) =>
 
 let hydrateGeneration = 0;
 
+/** Bump hydrate generation so in-flight `hydrateAuth` stops applying; resets `busy` from a cancelled hydrate. */
+export function abortHydrateAuth(): void {
+  hydrateGeneration++;
+  end();
+}
+
 function persistTokens(access: string | null, refresh: string | null): void {
   if (!browser) return;
   if (access) localStorage.setItem(STORAGE_ACCESS, access);

@@ -24,7 +24,7 @@ export function mapGraphqlFailureToPasswordResetCompleteFormErrors(
 ): PasswordResetCompleteFormErrors {
   if (looksLikeInvalidResetLink(failure)) {
     return {
-      form: "Ссылка недействительна или срок её действия истёк. Запросите восстановление пароля снова.",
+      form: "Ссылка недействительна. Запросите восстановление пароля снова.",
     };
   }
   return { form: defaultFormMessage(failure) };
@@ -36,7 +36,7 @@ export function mapUnknownErrorToPasswordResetCompleteFormErrors(
   const msg = err instanceof Error ? err.message : String(err);
   if (invalidResetLinkPattern.test(msg)) {
     return {
-      form: "Ссылка недействительна или срок её действия истёк. Запросите восстановление пароля снова.",
+      form: "Ссылка недействительна. Запросите восстановление пароля снова.",
     };
   }
   return { form: msg };
@@ -46,6 +46,7 @@ export function mapPasswordResetCompleteServerError(
   err: unknown,
 ): PasswordResetCompleteFormErrors {
   const failure = graphqlRequestFailureFromUnknown(err);
-  if (failure) return mapGraphqlFailureToPasswordResetCompleteFormErrors(failure);
+  if (failure)
+    return mapGraphqlFailureToPasswordResetCompleteFormErrors(failure);
   return mapUnknownErrorToPasswordResetCompleteFormErrors(err);
 }

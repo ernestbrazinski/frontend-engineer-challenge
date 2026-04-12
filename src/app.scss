@@ -189,3 +189,9 @@ a {
     --base-size: 2.273vw;
   }
 }
+
+@media only screen and (max-width: vars.$breakpoint-xxs) {
+  :root {
+    --base-size: 2.667vw;
+  }
+}
