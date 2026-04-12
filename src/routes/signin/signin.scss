@@ -2,8 +2,9 @@
 
 .signin {
   display: flex;
-  width: 100%;
+  width: 100vw;
   height: 100dvh;
+  overflow: hidden;
 }
 
 .signin__container {
@@ -13,9 +14,15 @@
 }
 
 .signin__logo {
+  display: inline-block;
   padding: calc(var(--base-size) * 1.6) 0 0 calc(var(--base-size) * 2);
   width: 100%;
   max-width: calc(var(--base-size) * 22);
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
 }
 
 .signin__form {
@@ -37,4 +44,22 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
+}
+
+@media only screen and (max-width: vars.$breakpoint-md) {
+  .signin__container {
+    flex: 0 0 50%;
+  }
+}
+
+@media only screen and (max-width: vars.$breakpoint-sm) {
+  .signin__container {
+    flex: 0 0 55%;
+  }
+}
+
+@media only screen and (max-width: vars.$breakpoint-xs) {
+  .signin__container {
+    flex: 0 0 100%;
+  }
 }

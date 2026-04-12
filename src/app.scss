@@ -136,6 +136,9 @@ a {
   line-height: 1;
 }
 
+.lh-1 {
+  line-height: 1;
+}
 .lh-14 {
   line-height: 1.4;
 }
@@ -166,5 +169,23 @@ a {
 @media only screen and (max-width: vars.$breakpoint-xl) {
   :root {
     --base-size: 0.694vw;
+  }
+}
+
+@media only screen and (max-width: vars.$breakpoint-md) {
+  :root {
+    --base-size: 0.977vw;
+  }
+}
+
+@media only screen and (max-width: vars.$breakpoint-sm) {
+  :root {
+    --base-size: 1.302vw;
+  }
+}
+
+@media only screen and (max-width: vars.$breakpoint-xs) {
+  :root {
+    --base-size: 2.273vw;
   }
 }

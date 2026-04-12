@@ -19,7 +19,9 @@
 - `npm run check` — `svelte-check` и TypeScript
 - `npm run format` — Prettier
 
-**Стек:** SvelteKit 2, Svelte 5, TypeScript, SCSS, Prettier.
+**Стек:** SvelteKit 2, Svelte 5, TypeScript, SCSS, Prettier, Apollo Client 4, GraphQL.
+
+**API:** по умолчанию `http://localhost:3080/graphql`. Переопределение: скопируйте `.env.example` в `.env` и задайте `PUBLIC_GRAPHQL_HTTP_URL`.
 
 ## Контекст
 

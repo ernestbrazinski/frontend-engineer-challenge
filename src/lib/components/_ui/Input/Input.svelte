@@ -11,7 +11,7 @@
   type Props = Omit<HTMLInputAttributes, "children"> & {
     error?: boolean | string;
     label?: string;
-    labelFocusText?: string;
+    labelFloatedText?: string;
   };
 
   let focused = $state(false);
@@ -21,7 +21,7 @@
     error = false,
     id,
     label,
-    labelFocusText,
+    labelFloatedText,
     type = "text",
     disabled = false,
     value = $bindable(),
@@ -34,14 +34,15 @@
 
   const fallbackId = `ui-input-${++idCounter}`;
   const inputId = $derived(id ?? fallbackId);
-  const messageId = $derived(`${inputId}-message`);
 
-  const invalid = $derived(!!error);
-  const message = $derived(typeof error === "string" ? error : "");
+  const isError = $derived(!!error);
+
+  const errorMessage = $derived(typeof error === "string" ? error : "");
+
+  const messageId = $derived(errorMessage ? `${inputId}-message` : undefined);
 
   const describedBy = $derived(
-    [ariaDescribedBy, message ? messageId : ""].filter(Boolean).join(" ") ||
-      undefined,
+    [ariaDescribedBy, messageId].filter(Boolean).join(" ") || undefined,
   );
 
   const isPassword = $derived(type === "password");
@@ -52,7 +53,7 @@
   );
 </script>
 
-<div class="ui-input {className}" data-invalid={invalid}>
+<div class="ui-input {className}" data-invalid={isError}>
   <div
     class="ui-input__field"
     class:ui-input__field--password={isPassword}
@@ -65,17 +66,25 @@
       bind:value
       id={inputId}
       class={["ui-input__control", className]}
-      aria-invalid={invalid ? "true" : undefined}
-      aria-errormessage={message ? messageId : undefined}
+      aria-invalid={isError ? "true" : undefined}
+      aria-errormessage={errorMessage ? messageId : undefined}
       aria-describedby={describedBy}
       onfocus={() => (focused = true)}
       onblur={() => (focused = false)}
     />
+
     {#if label}
-      <label class="ui-input__label" for={inputId}
-        >{focused ? labelFocusText : label}</label
-      >
+      <label class="ui-input__label" for={inputId}>
+        {focused || value ? labelFloatedText : label}
+      </label>
     {/if}
+
+    {#if errorMessage}
+      <p id={messageId} class="ui-input__error-text fz-12 lh-1" role="alert">
+        {errorMessage}
+      </p>
+    {/if}
+
     {#if isPassword && value}
       <button
         type="button"
@@ -93,9 +102,6 @@
       </button>
     {/if}
   </div>
-  {#if message}
-    <p id={messageId} class="ui-input__message" role="alert">{message}</p>
-  {/if}
 </div>
 
 <style lang="scss">
@@ -113,23 +119,27 @@
     transition: border-color 0.15s ease;
   }
 
-  .ui-input[data-invalid="true"] .ui-input__field {
+  .ui-input[data-invalid="true"] .ui-input__field,
+  .ui-input[data-invalid="true"] .ui-input__field:focus-within {
     border-bottom-color: var(--color-invalid);
+  }
+
+  .ui-input__error-text {
+    position: absolute;
+    bottom: calc(var(--base-size) * -2);
+    left: 0;
+    color: var(--color-invalid);
   }
 
   .ui-input:not([data-invalid="true"]) .ui-input__field:focus-within {
     border-bottom-color: var(--color-primary);
   }
 
-  .ui-input[data-invalid="true"] .ui-input__field:focus-within {
-    border-bottom-color: #c9343a;
-  }
-
   .ui-input__control {
     flex: 1;
     min-width: 0;
     margin: 0;
-    padding: calc(var(--base-size) * 1.6) 0;
+    padding: calc(var(--base-size) * 1.6) 0 calc(var(--base-size) * 1) 0;
     border: none;
     border-radius: 0;
     font: inherit;
@@ -182,11 +192,9 @@
   }
 
   .ui-input__toggle {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
+    width: calc(var(--base-size) * 2.4);
+    height: calc(var(--base-size) * 2.4);
+    padding: 0;
     border: none;
     background: transparent;
     cursor: pointer;
