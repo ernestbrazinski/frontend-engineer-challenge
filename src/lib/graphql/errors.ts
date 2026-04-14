@@ -1,8 +1,11 @@
 import { CombinedGraphQLErrors, ServerError } from "@apollo/client/errors";
-import type { GraphQLError } from "graphql";
+import type { GraphQLError, GraphQLFormattedError } from "graphql";
 
 function extensionCode(
-  ext: GraphQLError["extensions"] | undefined,
+  ext:
+    | GraphQLError["extensions"]
+    | GraphQLFormattedError["extensions"]
+    | undefined,
 ): string | undefined {
   if (!ext || typeof ext !== "object") return undefined;
   const code = (ext as Record<string, unknown>).code;
@@ -11,14 +14,20 @@ function extensionCode(
 
 /** `errors[0].extensions.code` (e.g. graphql-request or HTTP response). */
 export function firstGraphqlErrorCode(
-  errors: readonly GraphQLError[] | undefined,
+  errors:
+    | readonly GraphQLError[]
+    | readonly GraphQLFormattedError[]
+    | undefined,
 ): string | undefined {
   return extensionCode(errors?.[0]?.extensions);
 }
 
 /** All non-empty `extensions.code` values in `errors` order. */
 export function graphqlErrorCodesList(
-  errors: readonly GraphQLError[] | undefined,
+  errors:
+    | readonly GraphQLError[]
+    | readonly GraphQLFormattedError[]
+    | undefined,
 ): string[] {
   if (!errors?.length) return [];
   const out: string[] = [];

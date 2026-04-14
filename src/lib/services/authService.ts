@@ -25,6 +25,7 @@ function fail<T>(error: unknown): ApiResult<T> {
     ok: false,
     error: formatGraphqlError(error),
     network: isNetworkishError(error),
+    cause: error,
   };
 }
 

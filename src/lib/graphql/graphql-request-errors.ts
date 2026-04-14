@@ -1,3 +1,4 @@
+import { CombinedGraphQLErrors } from "@apollo/client/errors";
 import { ClientError } from "graphql-request";
 
 import {
@@ -18,13 +19,27 @@ export type GraphqlRequestFailure = {
 export function graphqlRequestFailureFromUnknown(
   err: unknown,
 ): GraphqlRequestFailure | null {
-  if (!(err instanceof ClientError)) return null;
-  const errors = err.response.errors;
-  const messages =
-    errors?.map((e) => e.message).filter((m): m is string => Boolean(m)) ?? [];
-  return {
-    primaryCode: firstGraphqlErrorCode(errors),
-    codes: graphqlErrorCodesList(errors),
-    messages: messages.length > 0 ? messages : [err.message],
-  };
+  if (err instanceof ClientError) {
+    const errors = err.response.errors;
+    const messages =
+      errors?.map((e) => e.message).filter((m): m is string => Boolean(m)) ??
+      [];
+    return {
+      primaryCode: firstGraphqlErrorCode(errors),
+      codes: graphqlErrorCodesList(errors),
+      messages: messages.length > 0 ? messages : [err.message],
+    };
+  }
+  if (CombinedGraphQLErrors.is(err)) {
+    const errors = err.errors;
+    const messages = errors
+      .map((e) => e.message)
+      .filter((m): m is string => Boolean(m));
+    return {
+      primaryCode: firstGraphqlErrorCode(errors),
+      codes: graphqlErrorCodesList(errors),
+      messages: messages.length > 0 ? messages : [err.message],
+    };
+  }
+  return null;
 }

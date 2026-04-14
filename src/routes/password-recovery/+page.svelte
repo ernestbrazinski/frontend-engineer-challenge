@@ -13,11 +13,7 @@
     type PasswordRecoveryFormErrors,
     type PasswordResetCompleteFormErrors,
   } from "$lib/form-errors";
-  import { getGraphQLRequestClient } from "$lib/graphql/graphql-request-client";
-  import {
-    COMPLETE_PASSWORD_RESET_MUTATION,
-    REQUEST_PASSWORD_RESET_MUTATION,
-  } from "$lib/graphql/operations/auth";
+  import { authService } from "$lib/services/authService";
   import {
     auth,
     clearSession,
@@ -76,13 +72,9 @@
 
     startAuthOperation("requestPasswordReset");
     try {
-      const client = getGraphQLRequestClient();
-      const data = await client.request<{ requestPasswordReset: boolean }>(
-        REQUEST_PASSWORD_RESET_MUTATION,
-        { input: { email: trimmed } },
-      );
-      if (typeof data.requestPasswordReset !== "boolean") {
-        formErrors = { email: "Пустой ответ сервера" };
+      const res = await authService.requestPasswordReset({ email: trimmed });
+      if (!res.ok) {
+        formErrors = mapPasswordRecoveryServerError(res.cause ?? res.error);
         return;
       }
       // For a syntactically valid email the API always returns true (no user enumeration).
@@ -103,7 +95,7 @@
     const pwdToSend = newPassword.trim();
     const policy = newPasswordResetPolicyError(newPassword);
     if (policy) errors.newPassword = policy;
-    if (pwdToSend && passwordConfirm && pwdToSend !== passwordConfirm.trim()) {
+    if (pwdToSend && pwdToSend !== passwordConfirm.trim()) {
       errors.passwordConfirm = "Пароли не совпадают";
     }
 
@@ -112,16 +104,17 @@
 
     startAuthOperation("completePasswordReset");
     try {
-      const client = getGraphQLRequestClient();
-      const data = await client.request<{ completePasswordReset: boolean }>(
-        COMPLETE_PASSWORD_RESET_MUTATION,
-        { input: { token, newPassword: pwdToSend } },
-      );
-      if (typeof data.completePasswordReset !== "boolean") {
-        completeFormErrors = { form: "Пустой ответ сервера" };
+      const res = await authService.completePasswordReset({
+        token,
+        newPassword: pwdToSend,
+      });
+      if (!res.ok) {
+        completeFormErrors = mapPasswordResetCompleteServerError(
+          res.cause ?? res.error,
+        );
         return;
       }
-      if (!data.completePasswordReset) {
+      if (!res.data) {
         view = { type: "error" };
         return;
       }

@@ -7,9 +7,7 @@
     mapSignUpServerError,
     type SignUpFormErrors,
   } from "$lib/form-errors";
-  import { getGraphQLRequestClient } from "$lib/graphql/graphql-request-client";
-  import { REGISTER_MUTATION } from "$lib/graphql/operations/auth";
-  import type { AuthPayloadGql } from "$lib/graphql/types";
+  import { authService } from "$lib/services/authService";
   import {
     auth,
     clearSessionError,
@@ -69,17 +67,16 @@
 
     startAuthOperation("register");
     try {
-      const client = getGraphQLRequestClient();
-      const data = await client.request<{ register: AuthPayloadGql }>(
-        REGISTER_MUTATION,
-        { input: { email, password: signUpForm.password } },
-      );
-      if (!data.register) {
-        signUpFormErrors = { form: "Пустой ответ сервера" };
+      const res = await authService.register({
+        email,
+        password: signUpForm.password,
+      });
+      if (!res.ok) {
+        signUpFormErrors = mapSignUpServerError(res.cause ?? res.error);
         return;
       }
-      commitAuthPayload(data.register);
-      await goto(ROUTES.signin);
+      commitAuthPayload(res.data);
+      await goto(ROUTES.home);
     } catch (err) {
       signUpFormErrors = mapSignUpServerError(err);
     } finally {

@@ -1,3 +1,3 @@
 export type ApiResult<T> =
   | { ok: true; data: T }
-  | { ok: false; error: string; network?: boolean };
+  | { ok: false; error: string; network?: boolean; cause?: unknown };

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { afterNavigate, goto } from "$app/navigation";
+  import { goto } from "$app/navigation";
   import { ROUTES } from "$lib/constants";
   import { Input, Button } from "$lib/components";
   import { isValidEmailFormat, minLengthError } from "$helpers";
@@ -7,25 +7,14 @@
     mapSignInServerError,
     type SignInFormErrors,
   } from "$lib/form-errors";
-  import { getGraphQLRequestClient } from "$lib/graphql/graphql-request-client";
-  import { LOGIN_MUTATION } from "$lib/graphql/operations/auth";
-  import type { AuthPayloadGql } from "$lib/graphql/types";
+  import { authService } from "$lib/services/authService";
   import {
-    abortHydrateAuth,
     auth,
     clearSessionError,
     commitAuthPayload,
     finishAuthOperation,
-    logout,
     startAuthOperation,
   } from "$lib/stores/auth";
-
-  afterNavigate(({ to }) => {
-    if (to?.url.pathname !== ROUTES.signin) return;
-    abortHydrateAuth();
-    clearSessionError();
-    void logout();
-  });
 
   type SignInFormState = {
     email: string;
@@ -64,16 +53,15 @@
 
     startAuthOperation("login");
     try {
-      const client = getGraphQLRequestClient();
-      const data = await client.request<{ login: AuthPayloadGql }>(
-        LOGIN_MUTATION,
-        { input: { email, password: signInForm.password } },
-      );
-      if (!data.login) {
-        signInFormErrors = { password: "Введены неверные данные" };
+      const res = await authService.login({
+        email,
+        password: signInForm.password,
+      });
+      if (!res.ok) {
+        signInFormErrors = mapSignInServerError(res.cause ?? res.error);
         return;
       }
-      commitAuthPayload(data.login);
+      commitAuthPayload(res.data);
       await goto(ROUTES.home);
     } catch (err) {
       signInFormErrors = mapSignInServerError(err);

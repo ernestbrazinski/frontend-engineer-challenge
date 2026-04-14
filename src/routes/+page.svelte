@@ -1,4 +1,17 @@
 <script lang="ts">
+  import { browser } from "$app/environment";
+  import { goto } from "$app/navigation";
+  import { ROUTES } from "$lib/constants";
+  import { auth } from "$lib/stores/auth";
+
+  $effect(() => {
+    if (!browser) return;
+    const { status } = $auth;
+    if (status === "idle" || status === "hydrating") return;
+    if (status === "anonymous") {
+      void goto(ROUTES.signin);
+    }
+  });
 </script>
 
 <svelte:head>
